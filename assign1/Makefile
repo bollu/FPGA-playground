@@ -1,9 +1,9 @@
-INPUT=4bitrca
+INPUT=FirstAttempt
 MODULE=hello
 
 build: ${INPUT}.bsv
 	bsc -verilog ${INPUT}.bsv
-	bsc -o sim -e mkHelloWorld mkHelloWorld.v
+	bsc -o sim.out -e mkAttempt mkAttempt.v
 
 run: build
-	./sim
+	./sim.out

@@ -1,3 +1,6 @@
+# Outfiles
+*.out
+
 # Vim 
 tags
 
