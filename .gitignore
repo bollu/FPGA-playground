@@ -1,0 +1,64 @@
+# Vim 
+tags
+
+
+# Altera synthesis results
+incremental_db/
+db/
+quartus_output/
+*.rbf
+*.qar
+*.done
+*.fit.*
+*.map.*
+*.pin
+*.qws
+*.log
+*.qarlog
+
+
+# Modelsim simulation output
+transcript
+wlft*
+*.wlf
+*.vstf
+modelsim.ini
+work/
+
+
+# Testbench output files
+output.*
+
+
+# Compiler outputs
+*.so
+*.o
+a.out
+
+
+# BSV-generated files
+mk*.cxx
+mk*.h
+model_mk*.h
+model_mk*.cxx
+*.ba
+mk*.v
+*.bo
+vpi_wrapper_*
+register.[ch]
+
+
+# PSLSE files
+pseries_nvram.*.bin
+
+
+# Local testbench files
+host2afu
+afu2host
+
+
+# Local library dirs
+vsim_bluelink/
+bsvlibs/
+.ptp-sync-folder/
+/.ptp-sync/
