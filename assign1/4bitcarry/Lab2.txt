@@ -1,0 +1,60 @@
+## CSE 140L: Lab Assignment 2
+
+# Name:
+# PID:
+# Email:
+
+################
+# For the following questions, please write your answer one space after ``:''.
+# Here is an example
+# Exercise 0.0: Calulate the area of an and1 gate
+# Answer 0.0: 1
+###############
+
+Exercise 1.2: Calcuate the area occupied by 1-bit full adder. 
+Answer 1.2:
+
+Exercise 1.3: Calcuate the area occupied by 4-bit ripple carry adder add4.
+Answer 1.3: 
+
+Exercise 1.4: Calcuate the propagation delay for 1-bit full adder from c_in to c_out.
+Answer 1.4:
+
+Exercise 1.5: Calcuate the propagation delay for 4-bit ripple carry adder from c_in to c_out.
+Answer 1.5:
+
+Exercise 2.2: Calcuate the area occupied by 8-bit ripple carry adder add8.
+Answer 2.2:
+
+Exercise 2.3: Calcuate the propagation delay for 8-bit ripple carry adder from c_in to c_out.
+Answer 2.3:
+
+Exercise 3.2: Calculate the area occupied by multiplexer1.
+Answer 3.2:
+
+Exercise 3.3: Calculate the maximum propagation delay for multiplexer1 from any of its inputs to its outputs.
+Answer 3.3: 
+
+Exercise 4.2: Calculate the area occupied by multiplexer4.
+Answer 4.2:
+
+Exercise 4.2: Calculate the maximum value of the propagation delay for multiplexer4 from any of its inputs to its outputs.
+Answer 4.2:
+
+Exercise 6.2: Calculate the area occupied by 4-bit ripple carry adder with c_in = 1.
+Answer 6.2:
+
+Exercise 6.3: Calculate the area occupied by 4-bit ripple carry adder with c_in = 0.
+Answer 6.3:
+
+Exercise 6.4: Calculate the the propagation delay for 4-bit ripple carry adder from any inputs to c_out with c_in = 1.
+Answer 6.4:
+
+Exercise 6.5: Calculate the the propagation delay for 4-bit ripple carry adder from any inputs to c_out with c_in = 0.
+Answer 6.5:
+
+Exercise 6.6: Calculate the area occupied by 8-bit carry select adder.
+Answer 6.6:
+
+Exercise 6.7: Calculate the propagation delay for 8-bit carry select adder from c_in to c_out.
+Answer 6.7:

@@ -1,0 +1,18 @@
+## CSE 140L: Lab Assignment 4
+
+# Name:
+# PID:
+# Email:
+
+################
+# For the following questions, please write your answer one space after ``:''.
+# Here is an example
+# Exercise 0.0: Calulate the area of an and1 gate
+# Answer 0.0: 1
+###############
+
+Exercise 2: Express method int Busy as function of x and y using bluespec syntax?
+(just write the body of Busy, you do not need to write the signature of it)
+Answers 2:
+Explanation 2(Optional):
+
