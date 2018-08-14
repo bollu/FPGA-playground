@@ -13,7 +13,17 @@ endfunction
 // 4 Bit full adder
 
 function Bit#(5) add4( Bit#(4) a, Bit#(4) b, Bit#(1) c_in );
-    return 0;
+    Bit#(5) carries = ?;
+    Bit#(4) outs;
+
+    // carries[0] = c_in;
+
+    for(Integer i = 0; i < 4; i = i + 1)
+    begin
+        outs[i] = fa_sum(a[i], b[i], carries[i]);
+        carries[i+1] = fa_carry(a[i], b[i], carries[i]);
+    end
+    return { carries[4], outs };
 endfunction
 
 // 8 Bit ripple carry adder
