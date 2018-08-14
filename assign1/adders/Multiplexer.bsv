@@ -21,5 +21,12 @@ function Bit#(4) multiplexer4(Bit#(1) sel, Bit#(4) a, Bit#(4) b);
 endfunction
 
 function Bit#(n) multiplexer_n(Bit#(1) sel, Bit#(n) a, Bit#(n) b);
-    return 0;
+    Bit#(n) out = ?;
+
+    for(Integer i = 0; i < valueOf(n); i = i + 1)
+    begin
+        out[i] = multiplexer1(sel, a[i], b[i]);
+    end
+
+    return out;
 endfunction
