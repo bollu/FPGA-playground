@@ -142,10 +142,10 @@ module mkTbAdd4Simple();
             let test = add4( val1, val2, 0 );
             Bit#(5) realAns = zeroExtend(val1) + zeroExtend(val2);
             if(test != realAns) begin
-                $display("FAILED %d + %d gave %d instead of %d", val1, val2, test, realAns);
+                $display("%d | FAILED %d + %d gave %d instead of %d", cycle, val1, val2, test, realAns);
                 $finish;
             end else begin
-                $display("%d + %d = %d", val1, val2, test);
+                $display("%d | %d + %d = %d", cycle, val1, val2, test);
             end
         end
         cycle <= cycle + 1;
@@ -180,10 +180,10 @@ module mkTbRCASimple();
             let test = add8( val1, val2, 0 );
             Bit#(9) realAns = zeroExtend(val1) + zeroExtend(val2);
             if(test != realAns) begin
-                $display("FAILED %d + %d gave %d instead of %d", val1, val2, test, realAns);
+                $display("%d | FAILED %d + %d gave %d instead of %d", cycle, val1, val2, test, realAns);
                 $finish;
             end else begin
-                $display("%d + %d = %d", val1, val2, test);
+                $display("%d | %d + %d = %d", cycle, val1, val2, test);
             end
         end
         cycle <= cycle + 1;
