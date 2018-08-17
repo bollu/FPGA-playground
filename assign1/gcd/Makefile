@@ -1,5 +1,6 @@
 all: gcdsimple gcdseq lgcd gcdzero 
 
+
 compile:
 	mkdir -p buildDir
 	bsc -u -sim -bdir buildDir -info-dir buildDir -simdir buildDir -vdir buildDir -aggressive-conditions -keep-fires -no-warn-action-shadowing TestBench.bsv
@@ -15,6 +16,9 @@ gcdzero: compile
 
 lgcd: compile
 	bsc -sim -e mkTbLGCD -bdir buildDir -info-dir buildDir -simdir buildDir -aggressive-conditions -keep-fires -o simLGCD -show-range-conflict -no-warn-action-shadowing
+
+test: all
+	./simGCDSeq | python test-sim-gcd-seq.py
 
 clean:
 	rm -rf buildDir sim* gcd.vcd
