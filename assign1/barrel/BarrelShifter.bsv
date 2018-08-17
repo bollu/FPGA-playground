@@ -51,7 +51,7 @@ function Integer powerOfTwo(Integer i);
     return (i == 0) ? 1 : 2 * powerOfTwo(i - 1);
 endfunction
 
-// NOTE: this perform a RIGHT SHIFT!
+// NOTE: this performs a logical RIGHT SHIFT!
 function Bit#(32) logicalBarrelShifter(Bit#(32) operand, Bit#(5) shamt);
     Bit#(32) outs = operand;
 
@@ -66,7 +66,7 @@ endfunction
 
 // Left shifter
 function Bit#(32) logicalLeftShifter(Bit#(32) operand, Bit#(5) shamt);
-    Bit#(32) outs = 0;
+    Bit#(32) outs = operand;
     for(Integer shiftbit = 0; shiftbit < 5; shiftbit = shiftbit + 1) 
     begin
         outs = multiplexer32(shamt[shiftbit], outs, 
@@ -75,6 +75,7 @@ function Bit#(32) logicalLeftShifter(Bit#(32) operand, Bit#(5) shamt);
     return outs;
 endfunction
 
+// arithmetic right shift
 function Bit#(32) arithmeticBarrelShifter(Bit#(32) operand, Bit#(5) shamt);
     Bit#(32) outs = operand;
 
@@ -88,7 +89,7 @@ endfunction
 
 function Bit#(32) logicalLeftRightBarrelShifter(Bit#(1) shiftLeft, Bit#(32) operand, Bit#(5) shamt);
     return (shiftLeft == 1) ? 
-        logicalLeftShifter(operand, shamt) :
-        logicalBarrelShifter(operand, shamt);
+        logicalLeftShifter(operand, 1) :
+        logicalBarrelShifter(operand, 1);
 endfunction
 
