@@ -89,7 +89,7 @@ endfunction
 
 function Bit#(32) logicalLeftRightBarrelShifter(Bit#(1) shiftLeft, Bit#(32) operand, Bit#(5) shamt);
     return (shiftLeft == 1) ? 
-        logicalLeftShifter(operand, 1) :
-        logicalBarrelShifter(operand, 1);
+        logicalLeftShifter(operand, shamt) :
+        logicalBarrelShifter(operand, shamt);
 endfunction
 
