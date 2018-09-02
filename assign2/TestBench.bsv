@@ -82,6 +82,7 @@ rule display if (stepLoop == False);
     multi.acknowledge();
 
     if (zext_num1 * zext_num2 != out) begin
+        $display("***FAIL!***");
         $display("EXPECTED:   %d * %d = %d", zext_num1, zext_num2, zext_num1 * zext_num2);
         $finish(1);
     end
