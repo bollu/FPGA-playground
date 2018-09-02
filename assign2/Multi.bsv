@@ -12,7 +12,7 @@ module mkMulti( Multiplier_IFC );
    Reg#(Tin)     mplr      <- mkReg(0);
 
    rule cycle ( mplr != 0 );
-      $display("Rule cycle fired mcand=%0d mplr=%0d", mcand, mplr);
+       $display("Rule cycle fired mcand=%0d mplr=%0d", mcand, mplr);
       if (mplr[0] == 1) product <= product + mcand;
       mcand   <= mcand << 1;
       mplr    <= mplr  >> 1;
