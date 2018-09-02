@@ -3,9 +3,9 @@ import Randomizable::*;
 import Multi::*;
 
 (* synthesize *)
-module TestReferenceMultiplier 
+module mkTestReferenceMultiplier ();
 endmodule 
 
 (* synthesize *)
-module TestSingleCycleMultiplier
+module mkTestSingleCycleMultiplier();
 endmodule 
