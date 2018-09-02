@@ -13,7 +13,7 @@ run_referencemult:
 
 build_singlecyclemult: testbench Single.bsv
 	mkdir -p bin
-	bsc -sim -e mkTestSingleCycleMultiplier -bdir buildDir -info-dir buildDir -simdir buildDir -o bin/testSinglecycleMultiplier buildDir/*.ba
+	bsc -sim -e mkTestSingleCycleMultiplier -bdir buildDir -info-dir buildDir -simdir buildDir -o bin/testSingleCycleMultiplier buildDir/*.ba
 
 run_singlecyclemult:
 	./bin/testSingleCycleMultiplier

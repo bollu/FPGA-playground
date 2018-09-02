@@ -35,4 +35,4 @@ module mkSingle( Multiplier_IFC );
    
 endmodule : mkSingle
    
-endpackage : Multi
+endpackage : Single
