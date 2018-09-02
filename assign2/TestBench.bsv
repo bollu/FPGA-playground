@@ -7,7 +7,6 @@ import Multiplier::*;
 module mkTestReferenceMultiplier ();
     Reg#(Bit#(16)) num1 <- mkReg(0);
     Reg#(Bit#(16)) num2 <- mkReg(0);
-    Reg#(Bit#(32)) out <- mkReg(0);
     Reg#(Bool) stepLoop <- mkReg(True);
     Reg#(Bit#(32)) numTests <- mkReg(0);
     // Randomize#(Bit#(16)) random <- mkGenericRandomizer;
@@ -27,7 +26,8 @@ rule loop if (stepLoop == True);
 endrule
 
 rule display if (stepLoop == False);
-    let out =   multi.result();
+    let out =  multi.result();
+
     // You need to acknowledge it so it "unlatches" and lets you feed
     // it a new value.. smh
     $display("CALCULATED: %d * %d = %d", num1, num2, multi.result());
