@@ -1,12 +1,16 @@
-// The implementation of the test bench. I tried to generalize this
-// but failed, so copy-pasting will have to suffice.
 import Vector::*;
 import Randomizable::*;
 import Multi::*;
 import Multiplier::*;
 
-(* synthesize *)
-module mkTestReferenceMultiplier ();
+// A module that is supposed to vary over choices of multiplier, but
+// I can't figure out how. What I want is something like this
+// (written in haskell syntax)
+//
+// mkTester :: Multiplier_IFC a => Tester a
+//
+// If only these guys had used haskell syntax :(
+module mkTester;
     Reg#(Bit#(16)) num1 <- mkReg(0);
     Reg#(Bit#(16)) num2 <- mkReg(0);
     Reg#(Bool) stepLoop <- mkReg(True);
@@ -46,8 +50,4 @@ rule display if (stepLoop == False);
     num2 <= num2 + 3;
 endrule
 
-endmodule 
-
-(* synthesize *)
-module mkTestSingleCycleMultiplier();
 endmodule 
