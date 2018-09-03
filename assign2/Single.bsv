@@ -38,68 +38,45 @@ module mkSingle( Multiplier_IFC );
    method Action start(Tin a, Tin b) if (available);
        available <= False;
 
-       Reg#(Bit#(1)) grid [16][16];
-
        Bit#(16) partials[16];
 
        // find partial sums of rows
-       // a3 a2 a1 a0
-       // b3 b2 b1 b0
+       // a4 a3 a2 a1 a0
+       // b4 b3 b2 b1 b0
        // -----------
-       //                     (C)
-       //                      |
-       //                      v
-       //            a3 a2 a1 a0  | b0
-       //         a3 a2 a1 a0     | b1
-       //      a3 a2 a1 a0        | b2
-       //   a3 a2 a1 a0           | b3
-       //  -----------------------*---
-       // 
-       //  ---------------------------
+       //                      (C)
+       //                       |
+       //                       v
+       //               | a4 a3 a2 a1 a0  & b0 <-(R)
+       //            a4 | a3 a2 a1 a0     & b1
+       //         a4 a3 | a2 a1 a0        & b2
+       //      a4 a3 a2 | a1 a0           & b3
+       //   a4 a3 a2 a1 | a0              & b4
+       //  -------------+---------------
+       //   r8 r7 r6 r5 | r4 r3 r2 r1 r0
+       //  -------------+---------------
 
        for(Integer i = 0; i < 16; i = i + 1) begin
            partials[i] = extend(b[i]) & a;
        end
 
 
-       Bit#(1) cur_carry = 0;
-       Bit#(1) cur_val = 0;
-
-       Bit#(1) next_carry = 0;
-       Bit#(1) next_val = 0;
-
-       Bit#(32) mulfinal[32];
-
-       // 0-initialize
-       for(Integer i = 0; i < 32; i = i + 1) begin
-           mulfinal[i] = 0;
-       end
-
-/*
-       // Iterate on columns
-       // a0 .. a16
-       for(Integer c = 1; c <= 16; c = c + 1) begin
-//           cur_val = 0;
-//           next_val = 0;
-
-           for(Integer r = 0; r < c; r += 1) begin
-//               next_val = fa_sum(cur_val, partials[r][c], cur_carry);
-//               next_carry = fa_carry(cur_val, partial[r][c], cur_carry);
-//
-               cur_val = next_val;
-               cur_carry = next_carry;
-        end
- //       mulfinal[c] = cur_val[c];
-       end
-       */
-
-       // a16..a32
-       /*
+       Bit#(32) mulfinal = 0;
        for(Integer c = 0; c < 16; c = c + 1) begin
-       end
-       */
+           Bit#(1) accum = 0;
+           Bit#(1) carry = 0;
 
-       product <= mulfinal[0];
+           for (Integer r = 0; r <= c; r = r + 1) begin
+               Bit#(1) accum_new = fa_sum(accum, partials[r][c - r], carry);
+               Bit#(1) carry_new = fa_carry(accum, partials[r][c - r], carry);
+
+               accum = accum_new;
+               carry = carry_new;
+           end
+           mulfinal[c] = accum;
+       end
+
+       product <= mulfinal;
 
    endmethod
 

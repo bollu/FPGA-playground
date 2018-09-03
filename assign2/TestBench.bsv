@@ -87,8 +87,8 @@ rule display if (stepLoop == False);
         $finish(1);
     end
     stepLoop <= True;
-    num1 <= num1 + 2;
-    num2 <= num2 + 3;
+    num1 <= num1 + 1;
+    num2 <= num2 + 1;
 endrule
 
 endmodule 
