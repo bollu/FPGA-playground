@@ -8,14 +8,14 @@ build_referencemult: testbench Multiplier.bsv
 	mkdir -p bin
 	bsc -sim -e mkTestReferenceMultiplier -bdir buildDir -info-dir buildDir -simdir buildDir -o bin/testReferenceMultiplier buildDir/*.ba
 
-run_referencemult:
+run_referencemult:  build_referencemult
 	./bin/testReferenceMultiplier
 
 build_singlecyclemult: testbench Single.bsv
 	mkdir -p bin
 	bsc -sim -e mkTestSingleCycleMultiplier -bdir buildDir -info-dir buildDir -simdir buildDir -o bin/testSingleCycleMultiplier buildDir/*.ba
 
-run_singlecyclemult:
+run_singlecyclemult: build_singlecyclemult
 	./bin/testSingleCycleMultiplier
 
 tar:

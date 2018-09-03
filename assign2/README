@@ -9,6 +9,8 @@
   random, or generate "somewhat random" bits using an LSFR, but this
   is more principled in any case...
 
+  Run `make run_singlecyclemult` to run the single cycle file.
+
 #Question
 The code and the test bench for the multi-cycle multiplier is supplied.
 Read how the entire bsv specification of the circuit is organized. Next,
