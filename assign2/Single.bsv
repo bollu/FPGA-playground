@@ -31,8 +31,8 @@ function Bit#(1) fa_carry( Bit#(1) a, Bit#(1) b, Bit#(1) c_in );
     return   (a & b) | ((a ^ b) & c_in);
 endfunction
 
-// 4 Bit full adder
-function Bit#(TAdd#(n,1)) add4( Bit#(n) a, Bit#(n) b, Bit#(1) c_in );
+// n Bit full adder
+function Bit#(TAdd#(n,1)) addn( Bit#(n) a, Bit#(n) b, Bit#(1) c_in );
     Bit#(TAdd#(n, 1)) carries = ?;
     Bit#(n) outs;
 
@@ -57,10 +57,11 @@ module mkSingle( Multiplier_IFC );
        available <= False;
        $display("calcuating %d * %d...\n", a, b);
 
+       //row, col indexing
        Bit#(32) partials[16];
        for(Integer i= 0; i < 16; i = i + 1) begin
                $display("b[%d] := %d | a << %d := %d", i, b[i], i, a << i);
-               partials[i] = multiplexer_n(b[i], 0, a << i);
+               partials[i] = multiplexer_n(b[i], 0, extend(a << i));
 
        end
 
@@ -76,37 +77,48 @@ module mkSingle( Multiplier_IFC );
        $display("===");
 
 
-       Bit#(32) mulfinal = 0;
+       Bit#(32) add_store[16] ;
        Bit#(1) carry = 0;
-       for(Integer c = 0; c < 32; c = c + 1) begin
-           $display(" ** COLUMN: %0d | carry: %d", c, carry);
-           Bit#(1) accum = 0;
 
-           for (Integer r = 0; r < 32; r = r + 1) begin
-               Bit#(1) cur = partials[r][c];
-
-               if (cur != 0) begin
-                   $display("partials[%0d] := 0%d | partials[%0d][%0d] = 1", r, partials[r], r, c, cur);
-               end
-
-               Bit#(1) accum_new = fa_sum(accum, cur, carry);
-               Bit#(1) carry_new = fa_carry(accum, cur, carry);
-
-
-               if (cur != 0) begin
-                   $display("accum(a:%0d + c:%0d + current:%d) = %d", accum, carry, cur, accum_new);
-                   $display("carry(a:%0d + c:%0d + current:%d) = %d", accum, carry, cur, carry_new);
-               end
-
-               accum = accum_new;
-               carry = carry_new;
-           end
-           mulfinal[c] = accum;
-           $display("mulfinal[%0d] = %0d", c, mulfinal[c]);
-           $display("mulfinal = %d", mulfinal);
+       add_store[0] = partials[0];
+       for(Integer r = 1; r < 16; r = r + 1) begin
+           Bit#(33) next  = addn(add_store[r - 1], partials[r], carry);
+           carry = next[32];
+           add_store[r] = next[31:0];
        end
+       product <= add_store[15];
 
+       /*
+       //row, col indexing
+       Bit#(32) accum[16];
+       Bit#(32) carry[16];
+       for(Integer c = 0; c < 32; c = c + 1) begin
+
+           carry[0][c] = c == 0 ? 0 : carry[15][0];
+           accum[0][c] = partials[0][c];
+
+           $display("COLUMN: (%0d) | carry: %0d | accum: %0d", c, carry[0][c], accum[0][c]);
+
+           for (Integer r = 1; r < 16; r = r + 1) begin
+               // This is NOT how one adds!
+               Bit#(1) cur = partials[r][c];
+               Bit#(1) cur_carry = carry[r - 1][c];
+               Bit#(1) cur_accum = accum[r - 1][c];
+
+               accum[r][c] = fa_sum(cur_accum, cur, cur_carry);
+               carry[r][c] = fa_carry(cur_accum, cur, cur_carry);
+
+
+               $display("\tROW: %0d | carry:%0d + accum:%0d + cur:%d := (carry: %0d, accum:%0d)", r, cur_carry, cur_accum, cur, carry[r][c], accum[r][c]);
+
+           end
+           mulfinal[c] = accum[15][c];
+           $display("MULFINAL[c] := %0d", accum[15][c]);
+           $display("---");
+       end
        product <= mulfinal;
+       */
+
 
 
        /*
