@@ -18,6 +18,8 @@ build_singlecyclemult: testbench Single.bsv
 run_singlecyclemult:
 	./bin/testSingleCycleMultiplier
 
+tar:
+
 
 #tester:
 #	mkdir -p buildDir

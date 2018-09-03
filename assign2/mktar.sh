@@ -1,8 +1,9 @@
-TARDIR=bhat-hw1
+set -e
+TARDIR=bhat-hw2
 export GZIP=-9
-rm -r $TARDIR
+rm -r $TARDIR || true
 mkdir $TARDIR
-cp -r *.bsv README
+cp -r *.bsv README $TARDIR
 
 tar czf $TARDIR.tar.gz $TARDIR
 
