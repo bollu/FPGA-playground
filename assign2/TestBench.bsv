@@ -61,7 +61,7 @@ module mkTestSingleCycleMultiplier();
 
 rule loop if (stepLoop == True);
     stepLoop <= False;
-    if (numTests == 100) begin
+    if (numTests == 10000) begin
         $display ("SUCCESS");
         $finish(0);
     end
@@ -87,8 +87,8 @@ rule display if (stepLoop == False);
         $finish(1);
     end
     stepLoop <= True;
-    num1 <= num1 + 1;
-    num2 <= num2 + 1;
+    num1 <= (num1 + 1) % (1 << 15 - 1);
+    num2 <= (num2 + 3) % (1 << 15 - 1);
 endrule
 
 endmodule 

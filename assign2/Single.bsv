@@ -61,7 +61,8 @@ module mkSingle( Multiplier_IFC );
        Bit#(32) partials[16];
        for(Integer i= 0; i < 16; i = i + 1) begin
                $display("b[%d] := %d | a << %d := %d", i, b[i], i, a << i);
-               partials[i] = multiplexer_n(b[i], 0, extend(a << i));
+               Bit#(32) a_extend = extend(a) << i;
+               partials[i] = multiplexer_n(b[i], 0, a_extend);
 
        end
 
