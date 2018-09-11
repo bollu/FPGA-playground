@@ -52,17 +52,17 @@ endfunction
 module mkPipeElastic( Multiplier_IFC );
    Reg#(Bool) available <- mkReg(True);
    Reg#(Bit#(16)) a <- mkReg(0);
-   FIFO#(Bit#(32)) fifo[32];
+   FIFO#(Bit#(32)) fifo[17];
 
    Reg#(Tout) product <- mkReg(0);
 
    // Initialize all of the FIFOs
-   for(Integer i = 0; i < 32; i = i + 1) begin
+   for(Integer i = 0; i < 17; i = i + 1) begin
        fifo[i] <- mkFIFO();
    end
 
    // generate pipeline rules
-   for(Integer i = 0; i < 15; i = i + 1) begin
+   for(Integer i = 0; i < 16; i = i + 1) begin
        rule stage if (True);
            Bit#(32) cur = fifo[i].first[31:0];
            Bit#(1) carry = fifo[i].first[32];
@@ -70,7 +70,7 @@ module mkPipeElastic( Multiplier_IFC );
 
            Bit#(32) cur_mul = extend(cur) << i;
            Bit#(32) next = multiplexer_n(a[i], cur, cur_mul);
-           fifo[i].enq(next);
+           fifo[i+1].enq(next);
        endrule
    end
 
@@ -81,7 +81,7 @@ module mkPipeElastic( Multiplier_IFC );
    endmethod
 
    method Tout result();
-       Bit#(32) cur = fifo[31].first;
+       Bit#(32) cur = fifo[16].first;
        // chop off carry.
       return cur;
    endmethod
