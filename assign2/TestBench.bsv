@@ -5,6 +5,7 @@ import Randomizable::*;
 import Multi::*;
 import Multiplier::*;
 import Single::*;
+import PipeElastic::*;
 
 (* synthesize *)
 module mkTestReferenceMultiplier ();
@@ -100,7 +101,7 @@ module mkTestElasticPipeline();
     Reg#(Bit#(32)) numTests <- mkReg(0);
     
     // single cycle multiplier
-    Multiplier_IFC multi <- mkSingle();
+    Multiplier_IFC multi <- mkPipeElastic();
 
 rule loop if (stepLoop == True);
     stepLoop <= False;
