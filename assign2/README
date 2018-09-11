@@ -21,11 +21,14 @@ Design a single cycle (purely combinational), elastic and inelastic
 pipelined multiplier
 circuits. You should respect the Multiplier_IFC interface in your 
 implementation. The module for single cycle multiplier should be mkSingle
-and should be written in the file Single.bsv. The module for elastic pipelined 
-multiplier should be mkElasticPipe and should be written in the file 
-PipeElastic.bsv. The module for inelastic pipelined 
-multiplier should be mkInElasticPipe and should be written in the file 
-PipeInElastic.bsv.
+and should be written in the file Single.bsv. 
+
+The module for elastic pipelined multiplier should be mkElasticPipe and should
+be written in the file PipeElastic.bsv. 
+
+The module for inelastic pipelined multiplier should be mkInElasticPipe and
+should be written in the file PipeInElastic.bsv.
+
 You should test your circuit designs by writting your own test benches.
 Writing good test benches is extremely important. So your submission
 will also be evaluated based on the quality of the test bench you have
