@@ -51,47 +51,46 @@ endfunction
 (* synthesize *)
 module mkPipeElastic( Multiplier_IFC );
    Reg#(Bool) available <- mkReg(True);
-   Reg#(Tin) a = 0;
-   FIFO#(TAdd#(Tin, 1)) fifo[32];
+   Reg#(Bit#(32)) a <- mkReg(0);
+   FIFO#(Bit#(33)) fifo[32];
 
    Reg#(Tout) product <- mkReg(0);
 
    // Initialize all of the FIFOs
    for(Integer i = 0; i < 32; i = i + 1) begin
-       fifo[i] <- mkFIFO();
+       //fifo[i] <- mkFIFO();
    end
 
    method Action start(Tin ain, Tin b) if (available);
        available <= False;
-       a <= ain;
+       a <= {0, ain};
        fifo[0] <= b;
    endmethod
 
    method Tout result();
        Bit#(33) cur = fifo[31].first;
-      return cur[0:31];
+       // chop off carry.
+      return cur[31:0];
    endmethod
 
    method Action acknowledge() if (!available);
       available <= True;
    endmethod
-
-
    
-   // generate pipeline rules
-   for(Integer i = 0; i < 32 - 1; i = i + 1) begin
-       rule stage;
-           Bit#(32) cur;
-           Bit#(1) carry;
+   //// generate pipeline rules
+   //for(Integer i = 0; i < 32 - 1; i = i + 1) begin
+   //    rule stage;
+   //        Bit#(32) cur;
+   //        Bit#(1) carry;
 
-           {carry, cur} = fifo[i].first;
-           fifo[i].deque();
+   //        {carry, cur} = fifo[i].first;
+   //        fifo[i].deque();
 
-           Bit#(32) cur_mul = extend(cur) << i;
-           Bit#(33) next = multiplexer_n(b[i], cur, cur_mul);
-           fifo[i].enque(next);
-       endrule
-   end
+   //        Bit#(32) cur_mul = extend(cur) << i;
+   //        Bit#(33) next = multiplexer_n(b[i], cur, cur_mul);
+   //        fifo[i].enque(next);
+   //    endrule
+   //end
 
    
 endmodule : mkPipeElastic
