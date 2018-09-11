@@ -51,7 +51,7 @@ endfunction
 (* synthesize *)
 module mkPipeElastic( Multiplier_IFC );
    Reg#(Bool) available <- mkReg(True);
-   Reg#(Bit#(32)) a <- mkReg(0);
+   Reg#(Bit#(16)) a <- mkReg(0);
    FIFO#(Bit#(33)) fifo[32];
 
    Reg#(Tout) product <- mkReg(0);
@@ -63,8 +63,8 @@ module mkPipeElastic( Multiplier_IFC );
 
    method Action start(Tin ain, Tin b) if (available);
        available <= False;
-       a <= {0, ain};
-       fifo[0] <= b;
+       a <=  ain;
+       fifo[0].enq({0, b});
    endmethod
 
    method Tout result();
