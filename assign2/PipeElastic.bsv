@@ -51,7 +51,8 @@ endfunction
 (* synthesize *)
 module mkPipeElastic( Multiplier_IFC );
    Reg#(Bool) available <- mkReg(True);
-   FIFO#(int) fifo[32];
+   Reg#(Tin) a = 0;
+   FIFO#(TAdd#(Tin, 1)) fifo[32];
 
    Reg#(Tout) product <- mkReg(0);
 
@@ -60,19 +61,38 @@ module mkPipeElastic( Multiplier_IFC );
        fifo[i] <- mkFIFO();
    end
 
-   method Action start(Tin a, Tin b) if (available);
+   method Action start(Tin ain, Tin b) if (available);
        available <= False;
-       $display("calcuating %d * %d...\n", a, b);
-       product <= 0;
+       a <= ain;
+       fifo[0] <= b;
    endmethod
 
    method Tout result();
-      return product;
+       Bit#(33) cur = fifo[31].first;
+      return cur[0:31];
    endmethod
 
    method Action acknowledge() if (!available);
       available <= True;
    endmethod
+
+
+   
+   // generate pipeline rules
+   for(Integer i = 0; i < 32 - 1; i = i + 1) begin
+       rule stage;
+           Bit#(32) cur;
+           Bit#(1) carry;
+
+           {carry, cur} = fifo[i].first;
+           fifo[i].deque();
+
+           Bit#(32) cur_mul = extend(cur) << i;
+           Bit#(33) next = multiplexer_n(b[i], cur, cur_mul);
+           fifo[i].enque(next);
+       endrule
+   end
+
    
 endmodule : mkPipeElastic
    
