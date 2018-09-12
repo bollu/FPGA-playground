@@ -6,6 +6,7 @@ import Multi::*;
 import Multiplier::*;
 import Single::*;
 import PipeElastic::*;
+import PipeInElastic::*;
 
 (* synthesize *)
 module mkTestReferenceMultiplier ();
@@ -145,12 +146,12 @@ module mkTestInelasticPipeline();
     Reg#(Bit#(32)) numTests <- mkReg(0);
     
     // single cycle multiplier
-    Multiplier_IFC multi <- mkSingle();
+    Multiplier_IFC multi <- mkPipeInElastic();
 
 rule loop if (stepLoop == True);
     stepLoop <= False;
-    if (numTests == 10000) begin
-        $display ("SUCCESS");
+    if (numTests == 1000) begin
+        $display("SUCCESS");
         $finish(0);
     end
 

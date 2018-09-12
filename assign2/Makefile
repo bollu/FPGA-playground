@@ -1,4 +1,4 @@
-cur: run_elasticpipeline
+cur: run_inelasticpipeline
 
 test: run_referencemult run_singlecyclemult run_elasticpipeline run_inelasticpipeline
 
@@ -39,7 +39,7 @@ run_elasticpipeline: build_elasticpipeline
 # INELASTIC PIPELINE
 build_inelasticpipeline: testbench PipeInElastic.bsv
 	mkdir -p bin
-	bsc -sim -e mkTestElasticPipeline -bdir buildDir -info-dir buildDir -simdir buildDir -o bin/testInelasticPipeline buildDir/*.ba
+	bsc -sim -e mkTestInelasticPipeline -bdir buildDir -info-dir buildDir -simdir buildDir -o bin/testInelasticPipeline buildDir/*.ba
 
 run_inelasticpipeline: build_inelasticpipeline
 	./bin/testInelasticPipeline
