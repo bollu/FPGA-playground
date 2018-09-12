@@ -66,8 +66,8 @@ package PipeInElastic;
 
 
         // generate pipeline rules
-        for(Integer i = 0; i < 16; i = i + 1) begin
-            rule stage if (!available);
+        rule pipeline if (!available);
+            for(Integer i = 0; i < 16; i = i + 1) begin
                 Bit#(32) cur = fifo[i].first;
                 fifo[i].deq();
 
@@ -81,8 +81,8 @@ package PipeInElastic;
                 $display("i: %d |  %d + (%d ? %d) = %d ", i, 
                   cur, a[i], b_shifted,next);
                 fifo[i+1].enq(next);
-            endrule
-        end
+            end
+        endrule
 
         rule pull;
             product <= fifo[16].first;
