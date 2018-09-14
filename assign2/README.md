@@ -16,7 +16,32 @@ tests
 
   Run `make run_singlecyclemult` to run the single cycle file.
 
-#Question
+
+## Testing the pipeline
+
+For whatever reason, It seems that `mkSizedFIFO` only works till we push
+2 elements into the pipeline (not sure why). Trying to push more that 2
+causes it to stall. So, currently, I test the pipeline by pushing 2
+numbers to be multiplied and then gathering the clock cycle numbers.
+
+**TODO: figure out why this is the case! (Pipeline > 2 not working)**
+
+We have a similar test cradle for elastic and inelastic case.
+
+## LFSR for randomness
+  We generate a random stream of numbers using an LFSR with hardcoded
+  seeds of 10, 20 for the two numbers. 
+  
+  I tried using the supposed i_rand to seed the LFSR
+  that allows one to pull random numbers, but it did not work.
+
+
+  In theory, one can open `/dev/random` and then use that to feed the pipeline,
+  but that's WAY too much work
+
+  Link: http://wiki.bluespec.com/Home/Experienced-Users/Generating-Random-Test-Patterns
+
+#Given Question
 The code and the test bench for the multi-cycle multiplier is supplied.
 Read how the entire bsv specification of the circuit is organized. Next,
 analyze which rules are getting fired in each clock cycle and make sure
