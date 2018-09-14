@@ -50,14 +50,11 @@ package PipeElastic;
 
     (* synthesize *)
     module mkPipeElastic( Multiplier_IFC );
-        Reg#(Bool) available <- mkReg(True);
         Reg#(Bit#(16)) a <- mkReg(0);
         Reg#(Bit#(16)) b <- mkReg(0);
 
-        Reg#(Bool) product_out <- mkReg(False);
         FIFO#(Bit#(32)) fifo[17];
 
-        Reg#(Bit#(32)) product <- mkReg(0);
 
         // Initialize all of the FIFOs
         for(Integer i = 0; i < 17; i = i + 1) begin
@@ -67,7 +64,7 @@ package PipeElastic;
 
         // generate pipeline rules
         for(Integer i = 0; i < 16; i = i + 1) begin
-            rule stage if (!available);
+            rule stage if (True);
                 Bit#(32) cur = fifo[i].first;
                 fifo[i].deq();
 
@@ -84,15 +81,8 @@ package PipeElastic;
             endrule
         end
 
-        rule pull;
-            product <= fifo[16].first;
-            fifo[16].deq();
-            product_out <= True;
-        endrule
 
-        method Action start(Tin ain, Tin bin) if (available);
-            available <= False;
-            product_out <= False;
+        method Action start(Tin ain, Tin bin);
             a <=  ain;
             b <= bin;
             fifo[0].enq(0);
@@ -101,12 +91,12 @@ package PipeElastic;
         endmethod
 
 
-        method Tout result() if (product_out == True);
-            return product;
+        method Tout result();
+            return fifo[16].first;
         endmethod
 
-        method Action acknowledge() if (product_out == True && !available);
-            available <= True;
+        method Action acknowledge();
+            fifo[16].deq();
         endmethod
     endmodule : mkPipeElastic
 endpackage : PipeElastic
