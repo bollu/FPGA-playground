@@ -58,16 +58,18 @@ package PipeInElastic;
 
         Reg#(Maybe#(Bit#(32))) fifo[17];
 
+        in <- mkFIFOF();
+        out<- mkFIFOF();
         // Initialize all of the FIFOs
         for(Integer i = 0; i < 17; i = i + 1) begin
-            in <- mkFIFOF();
-            out<- mkFIFOF();
+            fifo[i] <- mkReg(tagged Invalid);
         end
 
 
         // generate pipeline rules
         rule pipeline if (True) ;
 
+            $display("---");
             if (in.notEmpty())
             begin fifo[0] <= tagged Valid in.first;  in.deq(); end
             else fifo[0] <= tagged Invalid;
@@ -76,6 +78,7 @@ package PipeInElastic;
             for(Integer i = 0; i < 16; i = i + 1) begin
                 case (fifo[i]) matches
                     tagged Valid .cur: begin
+                        $display("\tfifo[%0d] VALID: %0d", i, cur);
                         Bit#(32) b_shifted = extend(b) << i;
                         // cur + b << i
                         Bit#(33) sum = addn(cur, b_shifted, 0);
@@ -83,21 +86,23 @@ package PipeInElastic;
                         Bit#(32) next = multiplexer_n(a[i], cur, sum[31:0]);
                         fifo[i + 1] <= tagged Valid next;
                     end
-                    tagged Invalid: 
+                    tagged Invalid: begin
+                        $display("\tfifo[%0d] INVALID", i);
                         fifo[i + 1] <= tagged Invalid;
-                    endcase
+                        end
+                endcase
             end
 
             case(fifo[16]) matches
                 tagged Valid .last: out.enq(last);
             endcase
+            $display("---");
         endrule
 
         method Action start(Tin ain, Tin bin);
             a <=  ain;
             b <= bin;
             in.enq(0);
-            $display("===");
             $display("%d * %d = ?? ", ain, bin);
         endmethod
 
