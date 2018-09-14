@@ -1,5 +1,6 @@
 package PipeElastic; 
     import FIFO :: * ;
+    import FIFOF :: * ;
 
     //single-cycle multiplier
 
@@ -52,12 +53,12 @@ package PipeElastic;
     module mkPipeElastic( Multiplier_IFC );
 
         //FIFO#(Bit#(32)) fifo[17];
-        FIFO#(Tuple3#(Bit#(16), Bit#(16), Bit#(32))) fifo[17];
+        FIFOF#(Tuple3#(Bit#(16), Bit#(16), Bit#(32))) fifo[17];
 
 
         // Initialize all of the FIFOs
         for(Integer i = 0; i < 17; i = i + 1) begin
-            fifo[i] <- mkFIFO();
+            fifo[i] <- mkSizedFIFOF(100);
         end
 
 
@@ -72,7 +73,6 @@ package PipeElastic;
                 cur = tpl_3(fifo[i].first);
                 $display("a: %d | b: %d | cur: %d", a, b, cur);
 
-                fifo[i].deq();
 
                 // b << i
                 Bit#(32) b_shifted = extend(b) << i;
@@ -85,6 +85,7 @@ package PipeElastic;
                   cur, a[i], b_shifted,next);
                 $display("--");
                 fifo[i+1].enq(tuple3(a, b, next));
+                fifo[i].deq();
             endrule
         end
 

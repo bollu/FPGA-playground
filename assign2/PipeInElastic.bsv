@@ -55,8 +55,8 @@ package PipeInElastic;
 
         Reg#(Maybe#(Tuple3#(Bit#(16), Bit#(16), Bit#(32)))) fifo[17];
 
-        in <- mkFIFOF();
-        out<- mkFIFOF();
+        in <- mkSizedFIFOF(101);
+        out<- mkSizedFIFOF(101);
         // Initialize all of the FIFOs
         for(Integer i = 0; i < 17; i = i + 1) begin
             fifo[i] <- mkReg(tagged Invalid);
@@ -96,7 +96,7 @@ package PipeInElastic;
             case(fifo[16]) matches
                 tagged Valid .last: out.enq(tpl_3(last));
             endcase
-            $display("---");
+            // $display("---");
         endrule
 
         method Action start(Tin ain, Tin bin);
