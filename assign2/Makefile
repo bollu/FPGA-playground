@@ -43,7 +43,9 @@ build_inelasticpipeline: testbench PipeInElastic.bsv
 
 run_inelasticpipeline: build_inelasticpipeline
 	./bin/testInelasticPipeline
+
 tar:
+	./mktar.sh
 
 
 #tester:
