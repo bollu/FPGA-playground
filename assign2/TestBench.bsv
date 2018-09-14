@@ -96,9 +96,11 @@ endmodule
 
 (* synthesize *)
 module mkTestElasticPipeline();
+
     Reg#(Bit#(16)) num1 <- mkReg(0);
     Reg#(Bit#(16)) num2 <- mkReg(0);
     Reg#(Bool) stepLoop <- mkReg(True);
+    Reg#(Bit#(32)) ncycles <- mkReg(0);
     Reg#(Bit#(32)) numTests <- mkReg(0);
     
     // single cycle multiplier
@@ -113,8 +115,16 @@ rule loop if (stepLoop == True);
 
     numTests <= numTests +1;
     multi.start(num1, num2);
-
+    ncycles <= 0;
 endrule
+
+
+rule step if (stepLoop == False);
+    ncycles <= ncycles + 1;
+endrule
+
+(* descending_urgency = "loop, display,step" *)
+(* execution_order = "loop, display, step" *)
 
 rule display if (stepLoop == False);
     let out =  multi.result();
@@ -122,6 +132,9 @@ rule display if (stepLoop == False);
     // You need to acknowledge it so it "unlatches" and lets you feed
     // it a new value.. smh
     $display("CALCULATED: %d * %d = %d", num1, num2, multi.result());
+
+    $display("### NCYCLES: %d" , ncycles);
+
     Bit#(32) zext_num1 = zeroExtend(num1);
     Bit#(32) zext_num2 = zeroExtend(num2);
     multi.acknowledge();
