@@ -1,10 +1,10 @@
 set -e
-TARDIR=bhat-hw2
+TARDIR=20161105_Assignment1
 export GZIP=-9
 rm -r $TARDIR || true
 mkdir $TARDIR
 cp -r *.bsv README.md Makefile $TARDIR
 
-tar czf $TARDIR.tar.gz $TARDIR
+zip -r $TARDIR.zip $TARDIR
 
 
