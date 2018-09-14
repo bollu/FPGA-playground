@@ -1,8 +1,13 @@
 #Answers
 
+To run, run `make test`, which builds and runs all the files with the
+tests
+
 - `Single.bsv` contains the implementation of the single-cycle
    fully unrolled adder. This circuit is wasteful
-   (I should implement a wallace tree, but it's OK for now)
+   (I should implement a wallace tree, but it's OK for now).
+
+- `PipeElastic` `PipeInElastic` contain the other versions of the implementations.
 
 - Tests are in `TestBench.bsv`, which runs 10000 tests on the
   given module by generating numbers in sequence. We can make this
