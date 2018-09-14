@@ -50,13 +50,10 @@ package PipeInElastic;
 
     (* synthesize *)
     module mkPipeInElastic( Multiplier_IFC );
-        Reg#(Bit#(16)) a <- mkReg(0);
-        Reg#(Bit#(16)) b <- mkReg(0);
-
-        FIFOF#(Bit#(32)) in;
+        FIFOF#(Tuple3#(Bit#(16), Bit#(16), Bit#(32))) in;
         FIFOF#(Bit#(32)) out;
 
-        Reg#(Maybe#(Bit#(32))) fifo[17];
+        Reg#(Maybe#(Tuple3#(Bit#(16), Bit#(16), Bit#(32)))) fifo[17];
 
         in <- mkFIFOF();
         out<- mkFIFOF();
@@ -69,7 +66,6 @@ package PipeInElastic;
         // generate pipeline rules
         rule pipeline if (True) ;
 
-            $display("---");
             if (in.notEmpty())
             begin fifo[0] <= tagged Valid in.first;  in.deq(); end
             else fifo[0] <= tagged Invalid;
@@ -77,32 +73,34 @@ package PipeInElastic;
         
             for(Integer i = 0; i < 16; i = i + 1) begin
                 case (fifo[i]) matches
-                    tagged Valid .cur: begin
+                    tagged Valid .valtup: begin
+                        // Extract components from tuple
+                        Bit#(16) a = tpl_1(valtup), b = tpl_2(valtup);
+                        Bit#(32) cur = tpl_3(valtup);
+
                         $display("\tfifo[%0d] VALID: %0d", i, cur);
                         Bit#(32) b_shifted = extend(b) << i;
                         // cur + b << i
                         Bit#(33) sum = addn(cur, b_shifted, 0);
 
                         Bit#(32) next = multiplexer_n(a[i], cur, sum[31:0]);
-                        fifo[i + 1] <= tagged Valid next;
+                        fifo[i + 1] <= tagged Valid tuple3(a, b, next);
                     end
                     tagged Invalid: begin
-                        $display("\tfifo[%0d] INVALID", i);
+                        // $display("\tfifo[%0d] INVALID", i);
                         fifo[i + 1] <= tagged Invalid;
                         end
                 endcase
             end
 
             case(fifo[16]) matches
-                tagged Valid .last: out.enq(last);
+                tagged Valid .last: out.enq(tpl_3(last));
             endcase
             $display("---");
         endrule
 
         method Action start(Tin ain, Tin bin);
-            a <=  ain;
-            b <= bin;
-            in.enq(0);
+            in.enq(tuple3(ain, bin, 0));
             $display("%d * %d = ?? ", ain, bin);
         endmethod
 
