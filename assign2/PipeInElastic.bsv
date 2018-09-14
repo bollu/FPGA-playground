@@ -67,21 +67,27 @@ package PipeInElastic;
 
         // generate pipeline rules
         rule pipeline if (True) ;
-            //Maybe#(Bit#(32)) mcur = tagged Valid fifo[0].first;
-            //fifo[0].deq();
+            fifo[0] <= tagged Valid in.first;
+            in.deq();
         
-            //for(Integer i = 0; i < 16; i = i + 1) begin
-            //    // b << i
-            //    Bit#(32) b_shifted = extend(b) << i;
-            //    // cur + b << i
-            //    Bit#(33) sum = addn(cur, b_shifted, 0);
+            for(Integer i = 0; i < 16; i = i + 1) begin
+                case (fifo[i]) matches
+                    tagged Valid .cur: begin
+                        Bit#(32) b_shifted = extend(b) << i;
+                        // cur + b << i
+                        Bit#(33) sum = addn(cur, b_shifted, 0);
 
-            //    Bit#(32) next = multiplexer_n(a[i], cur, sum[31:0]);
+                        Bit#(32) next = multiplexer_n(a[i], cur, sum[31:0]);
+                        fifo[i + 1] <= tagged Valid next;
+                    end
+                    tagged Invalid: 
+                        fifo[i + 1] <= tagged Invalid;
+                    endcase
+            end
 
-            //    $display("i: %d |  %d + (%d ? %d) = %d ", i, 
-            //      cur, a[i], b_shifted,next);
-            //    fifo[i+1].enq(next);
-            //end
+            case(fifo[16]) matches
+                tagged Valid .last: out.enq(last);
+            endcase
         endrule
 
         method Action start(Tin ain, Tin bin);
@@ -100,5 +106,6 @@ package PipeInElastic;
         method Action acknowledge();
             out.deq();
         endmethod
+
     endmodule : mkPipeInElastic
 endpackage : PipeInElastic

@@ -1,4 +1,4 @@
-cur: run_elasticpipeline
+cur: run_inelasticpipeline
 
 test: run_referencemult run_singlecyclemult run_elasticpipeline run_inelasticpipeline
 
