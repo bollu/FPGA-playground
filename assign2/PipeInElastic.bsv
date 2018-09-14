@@ -1,5 +1,5 @@
 package PipeInElastic; 
-    import FIFO :: * ;
+    import FIFOF :: * ;
 
     //single-cycle multiplier
 
@@ -53,22 +53,25 @@ package PipeInElastic;
         Reg#(Bit#(16)) a <- mkReg(0);
         Reg#(Bit#(16)) b <- mkReg(0);
 
-        FIFO#(Bit#(32)) in;
-        FIFO#(Bit#(32)) out;
+        FIFOF#(Bit#(32)) in;
+        FIFOF#(Bit#(32)) out;
 
         Reg#(Maybe#(Bit#(32))) fifo[17];
 
         // Initialize all of the FIFOs
         for(Integer i = 0; i < 17; i = i + 1) begin
-            in <- mkFIFO();
-            out<- mkFIFO();
+            in <- mkFIFOF();
+            out<- mkFIFOF();
         end
 
 
         // generate pipeline rules
         rule pipeline if (True) ;
-            fifo[0] <= tagged Valid in.first;
-            in.deq();
+
+            if (in.notEmpty())
+            begin fifo[0] <= tagged Valid in.first;  in.deq(); end
+            else fifo[0] <= tagged Invalid;
+
         
             for(Integer i = 0; i < 16; i = i + 1) begin
                 case (fifo[i]) matches
