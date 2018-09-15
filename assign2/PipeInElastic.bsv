@@ -49,7 +49,7 @@ package PipeInElastic;
     endfunction
 
     (* synthesize *)
-    module mkPipeInElastic( Multiplier_IFC );
+    module mkPipeInElastic( Multiplier_Pipelined_IFC );
         FIFOF#(Tuple3#(Bit#(16), Bit#(16), Bit#(32))) in;
         FIFOF#(Bit#(32)) out;
 
@@ -81,7 +81,7 @@ package PipeInElastic;
                         $display("\tfifo[%0d] VALID: %0d", i, cur);
                         Bit#(32) b_shifted = extend(b) << i;
                         // cur + b << i
-                        Bit#(33) sum = addn(cur, b_shifted, 0);
+                        Bit#(32) sum = addn(cur, b_shifted, 0);
 
                         Bit#(32) next = multiplexer_n(a[i], cur, sum[31:0]);
                         fifo[i + 1] <= tagged Valid tuple3(a, b, next);
@@ -105,12 +105,15 @@ package PipeInElastic;
         endmethod
 
 
-        method Tout result();
-            return out.first;
-        endmethod
-
-        method Action acknowledge();
-            out.deq();
+        method MTout result();
+            if (!out.isEmpty())
+            begin
+                let o = out.first;
+                out.deq();
+                return tagged Valid o;
+            end
+            else
+                return tagged Invalid;
         endmethod
 
     endmodule : mkPipeInElastic
