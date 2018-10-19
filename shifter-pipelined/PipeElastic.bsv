@@ -69,13 +69,12 @@ package PipeElastic;
                 
                 cur = tpl_1(fifo[i].first);
                 b = tpl_2(fifo[i].first);
-                // $display("a: %d | b: %d | cur: %d", a, b, cur);
-
+                // $display("a: %d(%b) | b: %d(%b) | cur: %d(%b)", a, b, cur);
 
                 Bit#(16) shifted = cur << (1 << i);
                 Bit#(16) next = multiplexer_n(b[i], cur, shifted);
 
-                fifo[i+1].enq(tuple2(cur, b));
+                fifo[i+1].enq(tuple2(next, b));
                 fifo[i].deq();
             endrule
         end
@@ -84,7 +83,7 @@ package PipeElastic;
         method Action start(Tin ain, Tin bin);
             fifo[0].enq(tuple2(ain, bin));
             $display("===");
-            $display("%d * %d = ?? ", ain, bin);
+            $display("%d(%b) * %d(%b) = ?? ", ain, bin);
         endmethod
 
 
