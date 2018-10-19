@@ -8,6 +8,7 @@ import Single::*;
 import PipeElastic::*;
 import PipeInElastic::*;
 import FIFO::*;
+import FIFOF::*;
 import LFSR::*;
 
 (* synthesize *)
@@ -102,8 +103,8 @@ module mkTestElasticPipeline();
     LFSR#(Bit#(16)) rand2 <- mkLFSR_16;
     Reg#(Bool) seeded <- mkReg(False);
 
-    FIFO#(Bit#(16)) num1vals <- mkFIFO();
-    FIFO#(Bit#(16)) num2vals <- mkFIFO();
+    FIFOF#(Bit#(16)) num1vals <- mkSizedFIFOF(200);
+    FIFOF#(Bit#(16)) num2vals <- mkSizedFIFOF(200);
     Reg#(Bit#(16)) npushed <- mkReg(0);
     
 
@@ -136,16 +137,16 @@ rule loop if (numTestsInBatchWaiting == 0 && seeded);
     nCycles <= nCycles + 1;
     nCyclesTotal <= nCyclesTotal + 1;
     $display("RULE: LOOP");
-    if (numTestsTotal == 1000) begin
+    if (numTestsTotal > 10) begin
         $display("SUCCESS");
         $finish(0);
     end
 
-    if (npushed == 2) begin
+    if (npushed == 3) begin
         $display("DONE LOOP!");
         npushed <= 0;
-        numTestsTotal <= numTestsTotal + 2;
-        numTestsInBatchWaiting <= 2;
+        numTestsTotal <= numTestsTotal + 3;
+        numTestsInBatchWaiting <= 3;
     end
     else begin
         let n1 = rand1.value();
@@ -205,8 +206,8 @@ module mkTestInelasticPipeline();
     LFSR#(Bit#(16)) rand2 <- mkLFSR_16;
     Reg#(Bool) seeded <- mkReg(False);
 
-    FIFO#(Bit#(16)) num1vals <- mkFIFO();
-    FIFO#(Bit#(16)) num2vals <- mkFIFO();
+    FIFOF#(Bit#(16)) num1vals <- mkSizedFIFOF(200);
+    FIFOF#(Bit#(16)) num2vals <- mkSizedFIFOF(200);
     Reg#(Bit#(16)) npushed <- mkReg(0);
     
 
@@ -239,16 +240,16 @@ rule loop if (numTestsInBatchWaiting == 0 && seeded);
     nCycles <= nCycles + 1;
     nCyclesTotal <= nCyclesTotal + 1;
     $display("RULE: LOOP");
-    if (numTestsTotal == 1000) begin
+    if (numTestsTotal > 100) begin
         $display("SUCCESS");
         $finish(0);
     end
 
-    if (npushed == 2) begin
+    if (npushed == 10) begin
         $display("DONE LOOP!");
         npushed <= 0;
-        numTestsTotal <= numTestsTotal + 2;
-        numTestsInBatchWaiting <= 2;
+        numTestsTotal <= numTestsTotal + 10;
+        numTestsInBatchWaiting <= 10;
     end
     else begin
         let n1 = rand1.value();
