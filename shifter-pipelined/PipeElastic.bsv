@@ -52,8 +52,8 @@ package PipeElastic;
     (* synthesize *)
     module mkPipeElastic( Multiplier_IFC );
 
-        //FIFO#(Bit#(32)) fifo[17];
-        FIFOF#(Tuple3#(Bit#(16), Bit#(16), Bit#(32))) fifo[17];
+        // (cur, b)
+        FIFOF#(Tuple2#(Bit#(16), Bit#(16))) fifo[17];
 
 
         // Initialize all of the FIFOs
@@ -65,40 +65,31 @@ package PipeElastic;
         // generate pipeline rules
         for(Integer i = 0; i < 16; i = i + 1) begin
             rule stage if (True);
-                Bit#(16) a, b;
-                Bit#(32) cur;
+                Bit#(16) b, cur;
                 
-                a = tpl_1(fifo[i].first);
+                cur = tpl_1(fifo[i].first);
                 b = tpl_2(fifo[i].first);
-                cur = tpl_3(fifo[i].first);
-                $display("a: %d | b: %d | cur: %d", a, b, cur);
+                // $display("a: %d | b: %d | cur: %d", a, b, cur);
 
 
-                // b << i
-                Bit#(32) b_shifted = extend(b) << i;
-                // cur + b << i
-                Bit#(33) sum = addn(cur, b_shifted, 0);
+                Bit#(16) shifted = cur << (1 << i);
+                Bit#(16) next = multiplexer_n(b[i], cur, shifted);
 
-                Bit#(32) next = multiplexer_n(a[i], cur, sum[31:0]);
-
-                $display("i: %d |  %d + (%d ? %d) = %d ", i, 
-                  cur, a[i], b_shifted,next);
-                $display("--");
-                fifo[i+1].enq(tuple3(a, b, next));
+                fifo[i+1].enq(tuple2(cur, b));
                 fifo[i].deq();
             endrule
         end
 
 
         method Action start(Tin ain, Tin bin);
-            fifo[0].enq(tuple3(ain, bin, 0));
+            fifo[0].enq(tuple2(ain, bin));
             $display("===");
             $display("%d * %d = ?? ", ain, bin);
         endmethod
 
 
         method Tout result();
-            return tpl_3(fifo[16].first);
+            return tpl_1(fifo[16].first);
         endmethod
 
         method Action acknowledge();

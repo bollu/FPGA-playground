@@ -4,7 +4,7 @@ import Vector::*;
 import Randomizable::*;
 import Multi::*;
 import Multiplier::*;
-//import PipeElastic::*;
+import PipeElastic::*;
 //import PipeInElastic::*;
 import FIFO::*;
 import LFSR::*;
@@ -44,153 +44,111 @@ rule display if (stepLoop == False);
         $finish(1);
     end
     stepLoop <= True;
-    num1 <= num1 + 2;
-    num2 <= num2 + 3;
+    num1 <= num1 + 1;
+    num2 <= num2 + 2;
 endrule
 
 endmodule 
 
-// (* synthesize *)
-// module mkTestSingleCycleMultiplier();
-//     Reg#(Bit#(16)) num1 <- mkReg(0);
-//     Reg#(Bit#(16)) num2 <- mkReg(0);
-//     Reg#(Bool) stepLoop <- mkReg(True);
-//     Reg#(Bit#(32)) numTestsTotal <- mkReg(0);
-//     
-//     // single cycle multiplier
-//     Multiplier_IFC multi <- mkSingle();
-// 
-// rule loop if (stepLoop == True);
-//     stepLoop <= False;
-//     if (numTestsTotal == 10000) begin
-//         $display ("SUCCESS");
-//         $finish(0);
-//     end
-// 
-//     numTestsTotal <= numTestsTotal +1;
-//     multi.start(num1, num2);
-// 
-// endrule
-// 
-// rule display if (stepLoop == False);
-//     let out =  multi.result();
-// 
-//     // You need to acknowledge it so it "unlatches" and lets you feed
-//     // it a new value.. smh
-//     $display("CALCULATED: %d * %d = %d", num1, num2, multi.result());
-//     multi.acknowledge();
-// 
-//     if (num1 << num2 != out) begin
-//         $display("***FAIL!***");
-//         $display("EXPECTED:   %d * %d = %d", num1, num2, num1 << num2);
-//         $finish(1);
-//     end
-//     stepLoop <= True;
-//     num1 <= (num1 + 1) % (1 << 15 - 1);
-//     num2 <= (num2 + 3) % (1 << 15 - 1);
-// endrule
-// endmodule 
-// 
-// (* synthesize *)
-// module mkTestElasticPipeline();
-//     LFSR#(Bit#(16)) rand1 <- mkLFSR_16;
-//     LFSR#(Bit#(16)) rand2 <- mkLFSR_16;
-//     Reg#(Bool) seeded <- mkReg(False);
-// 
-//     FIFO#(Bit#(16)) num1vals <- mkFIFO();
-//     FIFO#(Bit#(16)) num2vals <- mkFIFO();
-//     Reg#(Bit#(16)) npushed <- mkReg(0);
-//     
-// 
-//     Reg#(Bit#(32)) numTestsInBatchWaiting <- mkReg(0);
-//     Reg#(Bit#(32)) numTestsTotal <- mkReg(0);
-// 
-//     Reg#(Bit#(32)) nCycles <- mkReg(0);
-//     Reg#(Bit#(32)) nCyclesMax <- mkReg(0);
-//     Reg#(Bit#(32)) nCyclesMin <- mkReg(9999);
-//     Reg#(Bit#(32)) nCyclesTotal <- mkReg(0);
-//     
-//     // single cycle multiplier
-//     Multiplier_IFC multi <- mkPipeElastic();
-// 
-// (* descending_urgency = "seed, loop, display, bumpCycleCount" *)
-// 
-// rule seed (seeded == False);
-//     seeded <= True;
-//     rand1.seed(20);
-//     rand2.seed(10);
-// endrule
-// 
-// rule bumpCycleCount if (numTestsInBatchWaiting != 0 && seeded);
-//     $display("RULE: BUMP CYCLE COUNT");
-//     nCycles <= nCycles + 1;
-//     nCyclesTotal <= nCyclesTotal + 1;
-// endrule
-// 
-// rule loop if (numTestsInBatchWaiting == 0 && seeded);
-//     nCycles <= nCycles + 1;
-//     nCyclesTotal <= nCyclesTotal + 1;
-//     $display("RULE: LOOP");
-//     if (numTestsTotal == 1000) begin
-//         $display("SUCCESS");
-//         $finish(0);
-//     end
-// 
-//     if (npushed == 2) begin
-//         $display("DONE LOOP!");
-//         npushed <= 0;
-//         numTestsTotal <= numTestsTotal + 2;
-//         numTestsInBatchWaiting <= 2;
-//     end
-//     else begin
-//         let n1 = rand1.value();
-//         let n2 = rand2.value();
-// 
-//         rand1.next();
-//         rand2.next();
-// 
-//         multi.start(n1, n2);
-//         num1vals.enq(n1);
-//         num2vals.enq(n2);
-//         npushed <= npushed + 1;
-//         $display("...end pushing");
-//     end
-// endrule
-// 
-// rule display if (seeded);
-//     $display("RULE: DISPLAY");
-//     let out =  multi.result();
-// 
-//     let curnum1 = num1vals.first;
-//     let curnum2 = num2vals.first;
-// 
-//     // You need to acknowledge it so it "unlatches" and lets you feed
-//     // it a new value.. smh
-//     num1vals.deq();
-//     num2vals.deq();
-// 
-//     nCyclesMax <= max(nCycles, nCyclesMax);
-//     nCyclesMin <= min(nCycles, nCyclesMin);
-// 
-//     $display("####NCYCLES: %d", nCycles);
-//     $display("####NCYCLES (MIN): %d", nCyclesMin);
-//     $display("####NCYCLES (MAX): %d", nCyclesMax);
-// 
-//      $display("####NCYCLES (Total):%d / numTests (Total): %d ", nCyclesTotal, numTestsTotal);
-// 
-//     nCycles <= 0;
-//     $display("CALCULATED: %d << %d = %d | correct: %d ", curnum1, curnum2, multi.result(), num1 << num2);
-//     multi.acknowledge();
-// 
-//     if (num1 << num2 != out) begin
-//         $display("***FAIL!***");
-//         $display("EXPECTED:   %d  << %d = %d", num1, num2, num1 << num2);
-//         $finish(1);
-//     end
-//     numTestsInBatchWaiting <= numTestsInBatchWaiting - 1;
-// endrule
-// endmodule 
-// 
+(* synthesize *)
+module mkTestElasticPipeline();
+    LFSR#(Bit#(16)) rand1 <- mkLFSR_16;
+    LFSR#(Bit#(16)) rand2 <- mkLFSR_16;
+    Reg#(Bool) seeded <- mkReg(False);
+
+    FIFO#(Bit#(16)) num1vals <- mkFIFO();
+    FIFO#(Bit#(16)) num2vals <- mkFIFO();
+    Reg#(Bit#(16)) npushed <- mkReg(0);
+    
+
+    Reg#(Bit#(32)) numTestsInBatchWaiting <- mkReg(0);
+    Reg#(Bit#(32)) numTestsTotal <- mkReg(0);
+
+    Reg#(Bit#(32)) nCycles <- mkReg(0);
+    Reg#(Bit#(32)) nCyclesMax <- mkReg(0);
+    Reg#(Bit#(32)) nCyclesMin <- mkReg(9999);
+    Reg#(Bit#(32)) nCyclesTotal <- mkReg(0);
+    
+    // single cycle multiplier
+    Multiplier_IFC multi <- mkPipeElastic();
+
+    (* descending_urgency = "seed, loop, display, bumpCycleCount" *)
+    rule seed (seeded == False);
+        seeded <= True;
+        rand1.seed(20);
+        rand2.seed(10);
+    endrule
+
+    rule bumpCycleCount if (numTestsInBatchWaiting != 0 && seeded);
+        $display("RULE: BUMP CYCLE COUNT");
+        nCycles <= nCycles + 1;
+        nCyclesTotal <= nCyclesTotal + 1;
+    endrule
+
+    rule loop if (numTestsInBatchWaiting == 0 && seeded);
+        nCycles <= nCycles + 1;
+        nCyclesTotal <= nCyclesTotal + 1;
+        $display("RULE: LOOP");
+        if (numTestsTotal == 1000) begin
+            $display("SUCCESS");
+            $finish(0);
+        end
+
+        if (npushed == 2) begin
+            $display("DONE LOOP!");
+            npushed <= 0;
+            numTestsTotal <= numTestsTotal + 1;
+            numTestsInBatchWaiting <= 2;
+        end
+        else begin
+            let n1 = rand1.value();
+            let n2 = rand2.value();
+
+            rand1.next();
+            rand2.next();
+
+            multi.start(n1, n2);
+            num1vals.enq(n1);
+            num2vals.enq(n2);
+            npushed <= npushed + 1;
+            $display("...end pushing");
+        end
+    endrule
+
+    rule display if (seeded);
+        $display("RULE: DISPLAY");
+        let out =  multi.result();
+
+        let curnum1 = num1vals.first;
+        let curnum2 = num2vals.first;
+
+        // You need to acknowledge it so it "unlatches" and lets you feed
+        // it a new value.. smh
+        num1vals.deq();
+        num2vals.deq();
+
+        nCyclesMax <= max(nCycles, nCyclesMax);
+        nCyclesMin <= min(nCycles, nCyclesMin);
+
+        $display("####NCYCLES: %d", nCycles);
+        $display("####NCYCLES (MIN): %d", nCyclesMin);
+        $display("####NCYCLES (MAX): %d", nCyclesMax);
+
+         $display("####NCYCLES (Total):%d / numTests (Total): %d ", nCyclesTotal, numTestsTotal);
+
+        nCycles <= 0;
+        $display("CALCULATED: %d << %d = %d | correct: %d ", curnum1, curnum2, multi.result(), curnum1 << curnum2);
+        multi.acknowledge();
+
+        if (curnum1 << curnum2 != out) begin
+            $display("***FAIL!***");
+            $display("EXPECTED:   %d  << %d = %d", curnum1, curnum2, curnum1 << curnum2);
+            $finish(1);
+        end
+        numTestsInBatchWaiting <= numTestsInBatchWaiting - 1;
+    endrule
+endmodule 
+
 // 
 // (* synthesize *)
 // module mkTestInelasticPipeline();
