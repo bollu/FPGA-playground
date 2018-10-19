@@ -36,11 +36,11 @@ rule display if (stepLoop == False);
 
     // You need to acknowledge it so it "unlatches" and lets you feed
     // it a new value.. smh
-    $display("CALCULATED: %d * %d = %d", num1, num2, multi.result());
+    $display("CALCULATED: %d(%b) * %d(%b) = %d(%b)", num1, num1, num2, num2, multi.result(), multi.result());
     multi.acknowledge();
 
     if (num1 << num2 != out) begin
-        $display("EXPECTED:   %d * %d = %d", num1, num2, num1 << num2);
+        $display("EXPECTED:   %d(%b) * %d(%b) = %d(%b)", num1, num1, num2, num2, num1 << num2, num1 << num2);
         $finish(1);
     end
     stepLoop <= True;
@@ -137,12 +137,14 @@ module mkTestElasticPipeline();
          $display("####NCYCLES (Total):%d / numTests (Total): %d ", nCyclesTotal, numTestsTotal);
 
         nCycles <= 0;
-        $display("CALCULATED: %d << %d = %d | correct: %d ", curnum1, curnum2, multi.result(), curnum1 << curnum2);
+        $display("CALCULATED: %d(%b) << %d(%b) = %d(%b) | correct: %d(%b) ", 
+        curnum1, curnum1, curnum2, curnum2, multi.result(), multi.result(), curnum1 << curnum2, curnum1 << curnum2);
         multi.acknowledge();
 
         if (curnum1 << curnum2 != out) begin
             $display("***FAIL!***");
-            $display("EXPECTED:   %d  << %d = %d", curnum1, curnum2, curnum1 << curnum2);
+            $display("EXPECTED:   %d(%b)  << %d(%b) = %d(%b)", 
+            curnum1, curnum1, curnum2, curnum2, curnum1 << curnum2, curnum1 << curnum2);
             $finish(1);
         end
         numTestsInBatchWaiting <= numTestsInBatchWaiting - 1;
@@ -231,19 +233,19 @@ endmodule
 //     nCyclesMax <= max(nCycles, nCyclesMax);
 //     nCyclesMin <= min(nCycles, nCyclesMin);
 // 
-//     $display("####NCYCLES: %d", nCycles);
-//     $display("####NCYCLES (MIN): %d", nCyclesMin);
-//     $display("####NCYCLES (MAX): %d", nCyclesMax);
+//     $display("####NCYCLES: %d(%b)", nCycles);
+//     $display("####NCYCLES (MIN): %d(%b)", nCyclesMin);
+//     $display("####NCYCLES (MAX): %d(%b)", nCyclesMax);
 // 
-//      $display("####NCYCLES (Total):%d / numTests (Total): %d ", nCyclesTotal, numTestsTotal);
+//      $display("####NCYCLES (Total):%d(%b) / numTests (Total): %d(%b) ", nCyclesTotal, numTestsTotal);
 // 
 //     nCycles <= 0;
-//     $display("CALCULATED: %d * %d = %d | correct: %d ", curnum1, curnum2, multi.result(), num1 << num2);
+//     $display("CALCULATED: %d(%b) * %d(%b) = %d(%b) | correct: %d(%b) ", curnum1, curnum2, multi.result(), num1 << num2);
 //     multi.acknowledge();
 // 
 //     if (num1  << num2 != out) begin
 //         $display("***FAIL!***");
-//         $display("EXPECTED:   %d * %d = %d", num1, num2, num1 << num2);
+//         $display("EXPECTED:   %d(%b) * %d(%b) = %d(%b)", num1, num2, num1 << num2);
 //         $finish(1);
 //     end
 //     numTestsInBatchWaiting <= numTestsInBatchWaiting - 1;
