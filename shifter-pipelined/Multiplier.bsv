@@ -14,6 +14,7 @@ endinterface
 
 interface Multiplier_Pipelined_IFC;
     method Action  start (Tin m1, Tin m2);
+    method Bool is_ready();
     method Tout    result();
     method Action acknowledge();
 endinterface

@@ -7,6 +7,7 @@ import Multiplier::*;
 import PipeElastic::*;
 //import PipeInElastic::*;
 import FIFO::*;
+import FIFOF::*;
 import LFSR::*;
 
 (* synthesize *)
@@ -56,8 +57,8 @@ module mkTestElasticPipeline();
     LFSR#(Bit#(16)) rand2 <- mkLFSR_16;
     Reg#(Bool) seeded <- mkReg(False);
 
-    FIFO#(Bit#(16)) num1vals <- mkFIFO();
-    FIFO#(Bit#(16)) num2vals <- mkFIFO();
+    FIFOF#(Bit#(16)) num1vals <- mkSizedFIFOF(100);
+    FIFOF#(Bit#(16)) num2vals <- mkSizedFIFOF(100);
     Reg#(Bit#(16)) npushed <- mkReg(0);
     
 
@@ -70,35 +71,33 @@ module mkTestElasticPipeline();
     Reg#(Bit#(32)) nCyclesTotal <- mkReg(0);
     
     // single cycle multiplier
-    Multiplier_IFC multi <- mkPipeElastic();
+    Multiplier_Pipelined_IFC multi <- mkPipeElastic();
 
-    (* descending_urgency = "seed, loop, display, bumpCycleCount" *)
+    // (* descending_urgency = "seed, loop, display, bumpCycleCount" *)
+    (* descending_urgency = "seed, loop, display" *)
     rule seed (seeded == False);
         seeded <= True;
         rand1.seed(20);
         rand2.seed(10);
     endrule
 
-    rule bumpCycleCount if (numTestsInBatchWaiting != 0 && seeded);
-        $display("RULE: BUMP CYCLE COUNT");
-        nCycles <= nCycles + 1;
-        nCyclesTotal <= nCyclesTotal + 1;
-    endrule
-
     rule loop if (numTestsInBatchWaiting == 0 && seeded);
-        nCycles <= nCycles + 1;
-        nCyclesTotal <= nCyclesTotal + 1;
+
+        for(Integer i = 0; i < 20; i = i + 1) begin
+            $display("========");
+        end
+        
         $display("RULE: LOOP");
-        if (numTestsTotal == 1000) begin
+        if (numTestsTotal >= 10) begin
             $display("SUCCESS");
             $finish(0);
         end
 
-        if (npushed == 2) begin
-            $display("DONE LOOP!");
+        if (npushed == 3) begin
+            $display("DONE PUSHING(%d) | NUM TESTS(%d)", npushed, numTestsTotal);
             npushed <= 0;
-            numTestsTotal <= numTestsTotal + 1;
-            numTestsInBatchWaiting <= 2;
+            numTestsTotal <= numTestsTotal + 3;
+            numTestsInBatchWaiting <= 3;
         end
         else begin
             let n1 = rand1.value();
@@ -108,15 +107,18 @@ module mkTestElasticPipeline();
             rand2.next();
 
             multi.start(n1, n2);
+
             num1vals.enq(n1);
             num2vals.enq(n2);
             npushed <= npushed + 1;
-            $display("...end pushing");
+            $display("pushed: %d", npushed);
         end
     endrule
 
-    rule display if (seeded);
-        $display("RULE: DISPLAY");
+    rule display if (seeded && numTestsInBatchWaiting > 0);
+        $display("> RULE: DISPLAY");
+        numTestsInBatchWaiting <= numTestsInBatchWaiting - 1;
+
         let out =  multi.result();
 
         let curnum1 = num1vals.first;
@@ -147,7 +149,6 @@ module mkTestElasticPipeline();
             curnum1, curnum1, curnum2, curnum2, curnum1 << curnum2, curnum1 << curnum2);
             $finish(1);
         end
-        numTestsInBatchWaiting <= numTestsInBatchWaiting - 1;
     endrule
 endmodule 
 

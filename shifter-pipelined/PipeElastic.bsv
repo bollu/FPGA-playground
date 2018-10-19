@@ -50,32 +50,50 @@ package PipeElastic;
     endfunction
 
     (* synthesize *)
-    module mkPipeElastic( Multiplier_IFC );
+    module mkPipeElastic( Multiplier_Pipelined_IFC );
 
         // (cur, b)
         FIFOF#(Tuple2#(Bit#(16), Bit#(16))) fifo[17];
 
 
         // Initialize all of the FIFOs
-        for(Integer i = 0; i < 17; i = i + 1) begin
+        for(Integer i = 0; i <= 16; i = i + 1) begin
+            // fifo[i] <- mkSizedFIFOF(100);
             fifo[i] <- mkSizedFIFOF(100);
+
+
+            rule checknotfill;
+                if(!fifo[i].notFull()) begin
+                    $display("fifo[%d] is full", i);
+                    $finish(2);
+                end
+            endrule
+
+
+            rule checknotempty;
+                if(fifo[i].notEmpty()) begin
+                    $display("fifo[%d] is not empty", i);
+                end
+            endrule
         end
 
 
         // generate pipeline rules
-        for(Integer i = 0; i < 16; i = i + 1) begin
+        for(Integer i = 0; i <= 15; i = i + 1) begin
+
             rule stage if (True);
+                $display("running STAGE(%d)", i);
                 Bit#(16) b, cur;
                 
                 cur = tpl_1(fifo[i].first);
                 b = tpl_2(fifo[i].first);
-                // $display("a: %d(%b) | b: %d(%b) | cur: %d(%b)", a, b, cur);
+                $display("cur: %d(%b) | b: %d(%b)", cur, cur, b, b);
 
                 Bit#(16) shifted = cur << (1 << i);
                 Bit#(16) next = multiplexer_n(b[i], cur, shifted);
 
-                fifo[i+1].enq(tuple2(next, b));
                 fifo[i].deq();
+                fifo[i+1].enq(tuple2(next, b));
             endrule
         end
 
@@ -86,6 +104,9 @@ package PipeElastic;
             $display("%d(%b) * %d(%b) = ?? ", ain, bin);
         endmethod
 
+        method Bool is_ready();
+            return fifo[16].notEmpty;
+        endmethod
 
         method Tout result();
             return tpl_1(fifo[16].first);
